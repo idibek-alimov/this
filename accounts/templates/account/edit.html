@@ -1,0 +1,18 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+{% block title %} Edit your profile {% endblock %}
+
+{% block content %}
+  <h2>edit your profile  nigga</h2>
+  <p>hey nigga you can edit your profile now</p>
+  <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ user_form|crispy }}
+      {{ profile_form|crispy }}
+
+      <input class="btn btn-success ml-2" type="submit" value="Save the changes nigga">
+  </form>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+{% block title %} Create an account{% endblock %}
+
+{% block content %}
+  <h2>Create an account  nigga</h2>
+  <p>Please,sign up using the damn fallowing form:</p>
+  <form method="post">
+      {% csrf_token %}
+      {{ user_form|crispy }}
+      <p><input class="btn btn-success ml-2" value="Create my account" type="submit"></p>
+  </form>
+{% endblock %}

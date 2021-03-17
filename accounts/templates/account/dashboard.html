@@ -1,0 +1,16 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+{% block title %}Dashboard {% endblock %}
+
+{% block content %}
+
+   <h1>Dashboard</h1>
+   <p>Welcome to the dashboard. You can <a href="{% url 'accounts:edit' %}">edit you profile</a>
+   or <a href="#">change your password</a></p>
+   {% for product in products %}
+      <p> the product is <h1>{{ product.name }}</h1></p>
+   {% endfor %}
+{% endblock %}
