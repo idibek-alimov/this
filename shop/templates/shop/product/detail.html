@@ -1,6 +1,7 @@
 {% extends 'shop/base.html' %}
 {% load static %}
-
+{% load crispy_forms_tags %}
+{% load thumbnail %}
 
 {% block title %}
   {{ product.name }}
@@ -9,11 +10,9 @@
 
 {% block content %}
   <div class="product-detail container" >
-      <img src="{% if product.image %}
-                  {{ product.image.url }}
-                {% else %}
-                  {% static 'img/no_image.png' %}
-                {% endif %}">
+    <a href="{{ product.image.url }}">
+      <img src="{% thumbnail product.image 300x0 quality=100 %}">
+    </a>            
       <h1>{{ product.name }}</h1>
       <h2>
           <a href="{{ product.category.get_absolute_url }}">
@@ -21,12 +20,121 @@
               {{ product.category }}
           </a>
       </h2>
-      <p class="price"> ${{product.price}}</p>
+      <p class="price"> {{product.price}}  c.</p>
+    
+      
+
+
+
+
+{% with total_likes=product.users_like.count users_like=product.users_like.all %}
+    <div class="image-info">
+      <div>
+        <span class="count">
+          <span class="total">{{ total_likes }}</span>
+          like{{ total_likes|pluralize }}
+        </span>
+        <a href="#" data-id="{{ product.id }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="like button">
+          {% if request.user not in users_like %}
+            Like
+          {% else %}
+            Unlike
+          {% endif %}
+        </a>
+      </div>
+      
+    </div>
+  {% endwith %}
+
+
+
+
+
+
+
+
+
+      <form action="{% url 'shop:likee' product.id %}" method="post">
+        {{ like_product_form }}
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">
+         {% if liked %}
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bibi-heart" 
+               viewBox="0 0 16 16">
+             <path d="M8 2.748l-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
+          </svg>
+         {% else %}
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" 
+               class="bi bi-heart-fill" viewBox="0 0 16 16">
+             <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+          </svg>
+          {% endif %}
+         
+        </button>
+        
+      </form>     
       <form action="{% url 'cart:cart_add' product.id %}" method="post">
         {{ cart_product_form }}
         {% csrf_token %}
-        <input type="submit" value="Add to cart">
+        
+        <button type="submit" class="btn btn-danger">  
+          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#fff" class="bi bi-cart3" 
+               viewBox="0 0 16 16">
+                 <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l.84 4.479 9.144-.459L13.89 4H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+          </svg>
+        </button>
       </form>
+
       {{ product.description|linebreaks }}
   </div>
+  <div id="main" class="product-list container">
+      {% for similar in similar_products %}
+        <div class="item" >
+            <a href="{{ similar.get_absolute_url }}">
+              <img src="{%if similar.image %}{{ similar.image.url }}{% else %}
+              {% static 'img/no_image.png' %}{% endif %}">
+            </a>
+            <a href="{{ similar.get_absolute_url }}">
+                {{similar.name}}
+            </a>
+            <br>
+            {{ similar.price }}  c.
+        </div>
+      
+      {% endfor %}
+
+  </div>
+  
+{% endblock %}
+
+
+{% block domready %}
+  $('a.like').click(function(e){
+    e.preventDefault();
+    $.post('{% url "shop:like" %}',
+      {
+        id: $(this).data('id'),
+        action: $(this).data('action')
+      },
+      function(data){
+        if (data['status'] == 'ok')
+        {
+          var previous_action = $('a.like').data('action');
+
+          // toggle data-action
+          $('a.like').data('action', previous_action == 'like' ?
+          'unlike' : 'like');
+          // toggle link text
+          $('a.like').text(previous_action == 'like' ? 'Unlike' :
+          'Like');
+
+          // update total likes
+          var previous_likes = parseInt($('span.count .total').text());
+          $('span.count .total').text(previous_action == 'like' ?
+          previous_likes + 1 : previous_likes - 1);
+        }
+      }
+    );
+  });
 {% endblock %}

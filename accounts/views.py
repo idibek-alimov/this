@@ -85,10 +85,12 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def dashboard(request):
-    products = Product.objects.all()
+    products = Product.objects.filter(owner__username=request.user.username)
+    liked = Product.objects.filter(users_like__username=request.user.username)
     return render(request,
                   'account/dashboard.html',
                   {'section':'dashboard',
+                   'liked': liked,
                    'products':products})
 
 

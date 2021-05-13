@@ -7,10 +7,55 @@
 
 {% block content %}
 
-   <h1>Dashboard</h1>
-   <p>Welcome to the dashboard. You can <a href="{% url 'accounts:edit' %}">edit you profile</a>
-   or <a href="#">change your password</a></p>
-   {% for product in products %}
-      <p> the product is <h1>{{ product.name }}</h1></p>
-   {% endfor %}
+   <h1>My profile</h1>
+   <p>Welcome to your prfile {{ user.username }}. You can <a href="{% url 'accounts:edit' %}"> edit you profile</a></p>
+   <a class="navbar-brand " href="{% url 'shop:product_new' %}"><h3>add new product</h3></a>
+   <a href="{% url 'shop:product_new' %}" class="btn btn-danger ml-2">
+                    add product
+                </a>
+
+    <div id="main" class="product-list container">
+      <br>
+      <p>things you liked</p>
+        {% for product in liked %}
+          <div class="item" >
+            <a href="{{ product.get_absolute_url }}">
+              <img src="{%if product.image %}{{ product.image.url }}{% else %}
+                {% static 'img/no_image.png' %}{% endif %}">
+                <a href="{{ product.get_absolute_url }}">
+                  {{product.name}}
+                </a>
+              <br>
+              ${{ product.price }}
+
+          </a> 
+        </div>
+      {% endfor %}
+    <br>
+  </div>
+
+
+
+   <div id="main" class="product-list container">
+  
+
+   <p>You goods</p>
+      {% for product in products %}
+        <div class="item" >
+            <a href="{{ product.get_absolute_url }}">
+              <img src="{%if product.image %}{{ product.image.url }}{% else %}
+              {% static 'img/no_image.png' %}{% endif %}">
+            </a>
+            <a href="{{ product.get_absolute_url }}">
+                {{product.name}}
+            </a>
+            <br>
+            ${{ product.price }}
+        </div>
+      {% endfor %}
+  </div>
+
+
+
+
 {% endblock %}

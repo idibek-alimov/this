@@ -5,7 +5,7 @@
   {% if category %}{{ category.name }}{% else %} Products {% endif %}
 {% endblock %}
 
-
+<!--
 {% block category %}
   {% for c in categories %}
     <li>
@@ -13,7 +13,7 @@
     </li>
 
   {% endfor %}
-{% endblock %}
+{% endblock %}-->
 {% block content  %}
 
   <!--<div id="sidebar">
@@ -46,7 +46,7 @@
                 {{product.name}}
             </a>
             <br>
-            ${{ product.price }}
+            {{ product.price }}  c.
         </div>
       {% endfor %}
   </div>

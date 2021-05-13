@@ -1,21 +1,19 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
-
-
-#class CustomUser(AbstractUser):
- #   age = models.PositiveIntegerField(null=True,blank=True)
-
-# Create your models here.
+from shop.models import Category
+from django.contrib.auth import get_user_model
 
 class Profile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL,
+    user = models.OneToOneField(get_user_model(),
                                 on_delete=models.CASCADE)
     date_of_birth = models.DateField(blank=True,null=True)
-    #photo = models.ImageField(upload_to='users/%Y/%m/%d/',
-    #                          blank=True)
+    
+    preferences = models.ManyToManyField(Category,
+                                related_name='category_pref',
+    )#                                 on_delete=models.CASCADE) 
 
-    def __str(self):
+    def __str__(self):
         return f'Profile for user {self.user.username}'
     def get_absolute_url(self):
         return reverse('accounts:profile',
