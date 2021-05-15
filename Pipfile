@@ -21,6 +21,7 @@ django-rest-swagger = "==2.2.0"
 pygments = "*"
 django-filter = "*"
 whitenoise = "==4.1.4"
+dj-database-url = "==0.5.0"
 
 [dev-packages]
 
